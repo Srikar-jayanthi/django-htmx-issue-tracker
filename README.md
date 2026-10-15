@@ -8,6 +8,75 @@ This application is designed following the principles of **Progressive Enhanceme
 
 ---
 
+## 🚀 Mentor & Evaluator Quick Verification Guide
+
+Welcome! If you are reviewing or evaluating this project, follow the instructions below to run and verify the application on your machine in under 2 minutes.
+
+### Quick Start (Option A: Using Docker - Recommended)
+You only need Docker and Docker Compose installed:
+```bash
+# 1. Clone the repository
+git clone https://github.com/Srikar-jayanthi/django-htmx-issue-tracker.git
+cd django-htmx-issue-tracker
+
+# 2. Build and launch all services in 1 command
+docker-compose up --build
+```
+> **What this does automatically:**
+> - Spins up PostgreSQL (`tracker_db`) and Django with Gunicorn (`web`).
+> - Applies all migrations automatically.
+> - Automatically seeds 3 projects, multiple issues across 'To Do', 'In Progress', and 'Done', and initial comments.
+> - The live app is ready immediately at **[http://localhost:8000](http://localhost:8000)**.
+
+---
+
+### Quick Start (Option B: Running Locally with Python)
+If you prefer running without Docker:
+```bash
+# 1. Clone and enter directory
+git clone https://github.com/Srikar-jayanthi/django-htmx-issue-tracker.git
+cd django-htmx-issue-tracker
+
+# 2. Create and activate a virtual environment
+python -m venv .venv
+# On Windows:
+.venv\Scripts\activate
+# On macOS / Linux:
+source .venv/bin/activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Run migrations and seed data
+python manage.py migrate
+python manage.py seed_data
+
+# 5. Start the server
+python manage.py runserver
+```
+Visit **[http://localhost:8000](http://localhost:8000)**.
+
+---
+
+### Verifying the Project
+
+#### 1. Run Automated Test Suite (12/12 Passing)
+```bash
+python manage.py test
+```
+All 12 tests validate both standard SSR requests (302 redirects) and enhanced HTMX requests (`HTTP_HX_REQUEST='true'` returning 200 OK partial HTML fragments).
+
+#### 2. Test Progressive Enhancement in Browser
+1. Open **[http://localhost:8000/projects/1/](http://localhost:8000/projects/1/)**.
+2. **With JavaScript enabled**:
+   - Click "In Progress" or "Done" on any issue card -> notice the card status updates instantly via HTMX partial swap without a full page reload.
+   - Click into an issue and add a comment -> the comment appears dynamically at the bottom.
+3. **With JavaScript disabled** (simulate no-JS client):
+   - In Chrome/Firefox/Edge DevTools (F12) -> Settings -> "Disable JavaScript".
+   - Reload the page and move an issue or submit a comment -> the application functions identically using pure standard Django server-side rendering and full page reloads!
+
+---
+
 ## Architecture & System Design
 
 ### Progressive Enhancement Flow
