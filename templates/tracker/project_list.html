@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Projects - IssueFlow Tracker{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-200 gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Projects</h1>
+      <p class="text-sm text-gray-600 mt-1">Select a software project to inspect its Kanban board, issues, and workflow.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for project in projects %}
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-indigo-600">Project #{{ project.id }}</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+              {{ project.issues.count }} issues
+            </span>
+          </div>
+          <h2 class="text-xl font-bold text-gray-900 mb-2">
+            <a href="{% url 'tracker:project_board' project.id %}" class="hover:text-indigo-600 transition">
+              {{ project.name }}
+            </a>
+          </h2>
+          <p class="text-sm text-gray-600 mb-4 line-clamp-3">
+            {{ project.description|default:"No description provided." }}
+          </p>
+        </div>
+        <div class="pt-4 border-t border-gray-100 flex items-center justify-between">
+          <span class="text-xs text-gray-400">Created: {{ project.created_at|date:"M Y" }}</span>
+          <a href="{% url 'tracker:project_board' project.id %}"
+             class="inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-700">
+            Open Board &rarr;
+          </a>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-span-full py-12 text-center bg-white rounded-lg border border-dashed border-gray-300">
+        <p class="text-gray-500 text-sm">No projects found. Run database migrations and seeding to populate projects.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+<div id="comment-{{ comment.id }}" class="comment-item bg-white p-4 rounded-lg border border-gray-200 shadow-sm mb-3">
+  <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+    <div class="flex items-center space-x-2">
+      <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
+        U
+      </div>
+      <span class="font-medium text-gray-800">User</span>
+    </div>
+    <span class="text-gray-400">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+  </div>
+  <div class="comment-content text-sm text-gray-700 whitespace-pre-wrap pl-8">
+    {{ comment.content }}
+  </div>
+</div>

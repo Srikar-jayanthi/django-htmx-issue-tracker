@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.name }} - Issue Board{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Project Header & Navigation -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-gray-200 gap-4">
+    <div>
+      <div class="flex items-center space-x-2 text-sm text-gray-500 mb-1">
+        <a href="{% url 'tracker:project_list' %}" class="hover:text-indigo-600">&larr; Back to Projects</a>
+        <span>/</span>
+        <span class="text-gray-700 font-medium">Project #{{ project.id }}</span>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900">{{ project.name }}</h1>
+      {% if project.description %}
+        <p class="text-sm text-gray-600 mt-1 max-w-2xl">{{ project.description }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Quick action: Toggle / View Issue Form -->
+    <div>
+      <a href="#new-issue-form" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition">
+        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        New Issue
+      </a>
+    </div>
+  </div>
+
+  <!-- Kanban Board: Distinct sections for To Do, In Progress, Done -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Section: To Do -->
+    <section id="section-todo" class="board-column p-4 flex flex-col">
+      <div class="flex items-center justify-between pb-3 mb-3 border-b border-gray-200">
+        <div class="flex items-center space-x-2">
+          <span class="w-3 h-3 rounded-full bg-gray-400"></span>
+          <h2 class="text-base font-bold text-gray-800">To Do</h2>
+        </div>
+        <span class="bg-gray-200 text-gray-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+          {{ todo_issues|length }}
+        </span>
+      </div>
+      <div id="column-todo" class="space-y-3 flex-grow overflow-y-auto">
+        {% for issue in todo_issues %}
+          {% include 'tracker/partials/_issue_card.html' with issue=issue %}
+        {% empty %}
+          <div class="empty-placeholder text-center py-8 text-xs text-gray-400 italic">
+            No issues in To Do
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Section: In Progress -->
+    <section id="section-in-progress" class="board-column p-4 flex flex-col">
+      <div class="flex items-center justify-between pb-3 mb-3 border-b border-gray-200">
+        <div class="flex items-center space-x-2">
+          <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+          <h2 class="text-base font-bold text-gray-800">In Progress</h2>
+        </div>
+        <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-0.5 rounded-full">
+          {{ in_progress_issues|length }}
+        </span>
+      </div>
+      <div id="column-in-progress" class="space-y-3 flex-grow overflow-y-auto">
+        {% for issue in in_progress_issues %}
+          {% include 'tracker/partials/_issue_card.html' with issue=issue %}
+        {% empty %}
+          <div class="empty-placeholder text-center py-8 text-xs text-gray-400 italic">
+            No issues in In Progress
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Section: Done -->
+    <section id="section-done" class="board-column p-4 flex flex-col">
+      <div class="flex items-center justify-between pb-3 mb-3 border-b border-gray-200">
+        <div class="flex items-center space-x-2">
+          <span class="w-3 h-3 rounded-full bg-green-500"></span>
+          <h2 class="text-base font-bold text-gray-800">Done</h2>
+        </div>
+        <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 rounded-full">
+          {{ done_issues|length }}
+        </span>
+      </div>
+      <div id="column-done" class="space-y-3 flex-grow overflow-y-auto">
+        {% for issue in done_issues %}
+          {% include 'tracker/partials/_issue_card.html' with issue=issue %}
+        {% empty %}
+          <div class="empty-placeholder text-center py-8 text-xs text-gray-400 italic">
+            No issues in Done
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <!-- Create Issue Section: Standard Form Submission (Contract 4) -->
+  <section id="new-issue-form" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mt-8">
+    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      Create New Issue
+    </h3>
+    <form method="POST" action="{% url 'tracker:create_issue' project.id %}" class="space-y-4 max-w-xl">
+      {% csrf_token %}
+      <div>
+        <label for="id_title" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Issue Title *</label>
+        <input type="text" name="title" id="id_title" required
+               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+               placeholder="e.g., Fix broken login redirect loop">
+      </div>
+      <div>
+        <label for="id_description" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Description</label>
+        <textarea name="description" id="id_description" rows="3"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  placeholder="Provide context, acceptance criteria, or reproduction steps..."></textarea>
+      </div>
+      <div>
+        <label for="id_status" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Status</label>
+        <select name="status" id="id_status"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+          <option value="To Do" selected>To Do</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Done">Done</option>
+        </select>
+      </div>
+      <div>
+        <button type="submit"
+                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
+          Create Issue
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}
