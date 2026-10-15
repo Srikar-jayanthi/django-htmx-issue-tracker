@@ -84,6 +84,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASE_URL = os.getenv('DATABASE_URL')
+if not DATABASE_URL and os.getenv('POSTGRES_DB'):
+    db_user = os.getenv('POSTGRES_USER', 'tracker_user')
+    db_pass = os.getenv('POSTGRES_PASSWORD', 'tracker_pass')
+    db_host = os.getenv('POSTGRES_HOST', 'localhost')
+    db_port = os.getenv('POSTGRES_PORT', '5432')
+    db_name = os.getenv('POSTGRES_DB', 'tracker_db')
+    DATABASE_URL = f"postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+
 if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(
@@ -99,6 +107,7 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
 
 
 

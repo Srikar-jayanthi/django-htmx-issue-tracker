@@ -9,7 +9,9 @@ import time
 import psycopg2
 
 db_url = os.environ.get("DATABASE_URL")
-if not db_url:
+if db_url and db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+elif not db_url:
     host = os.environ.get("POSTGRES_HOST", "db")
     port = os.environ.get("POSTGRES_PORT", "5432")
     user = os.environ.get("POSTGRES_USER", "tracker_user")
