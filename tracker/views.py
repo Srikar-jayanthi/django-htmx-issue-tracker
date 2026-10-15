@@ -98,7 +98,7 @@ def update_issue_status(request, issue_id):
 
     if is_htmx(request):
         # Progressively enhanced response: partial fragment only, no <html> or <body>
-        return render(request, 'tracker/partials/_issue_card.html', {
+        return render(request, 'tracker/_issue_card.html', {
             'issue': issue,
             'project': issue.project,
         })
@@ -144,7 +144,7 @@ def add_comment(request, issue_id):
 
         if is_htmx(request):
             # Progressively enhanced response: partial fragment only, no <html> or <body>
-            return render(request, 'tracker/partials/_comment.html', {
+            return render(request, 'tracker/_comment.html', {
                 'comment': comment,
             })
 
